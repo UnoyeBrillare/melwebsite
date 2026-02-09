@@ -1,0 +1,177 @@
+// Prisma Schema for Milky Express E-Commerce Platform
+// SQLite-compatible version
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User Model - Customer accounts and admins
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed with bcrypt
+  firstName String?
+  lastName  String?
+  role      String   @default("CUSTOMER") // "CUSTOMER" or "ADMIN"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  cartItems CartItem[]
+
+  @@map("users")
+}
+
+// Product Model - Main product information
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  basePrice   Float    // SQLite doesn't support Decimal, using Float
+
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+
+  // Product attributes
+  isFeatured      Boolean  @default(false)
+  isActive        Boolean  @default(true)
+
+  // Certifications
+  isGlutenFree    Boolean  @default(false)
+  isNonGMO        Boolean  @default(false)
+  isKosher        Boolean  @default(false)
+  isOrganic       Boolean  @default(false)
+
+  // Categories (tags) - Stored as comma-separated string
+  categories      String   @default("") // e.g., "lactation,pregnancy,postpartum"
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  images          ProductImage[]
+  variants        ProductVariant[]
+  cartItems       CartItem[]
+  orderItems      OrderItem[]
+
+  @@map("products")
+}
+
+// Product Image Model - Multiple images per product
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String  // Cloudinary URL
+  altText   String?
+  order     Int     @default(0) // For sorting images
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+// Product Variant Model - Flavors/variations
+model ProductVariant {
+  id             String   @id @default(cuid())
+  productId      String
+  name           String   // "Birthday Cake", "Brownie Fudge", etc.
+  sku            String   @unique
+  price          Float    // SQLite doesn't support Decimal
+  inventoryCount Int      @default(0)
+
+  // Variant-specific metadata - Stored as JSON string
+  attributes     String?  // JSON string: {"flavor": "Chocolate", "size": "12oz"}
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  product        Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+
+  @@map("product_variants")
+}
+
+// Cart Item Model - Shopping cart (supports guest carts)
+model CartItem {
+  id              String   @id @default(cuid())
+  userId          String?  // Null for guest carts
+  sessionId       String?  // For guest carts
+  productId       String
+  variantId       String?
+  quantity        Int      @default(1)
+  isSubscription  Boolean  @default(false)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product         Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant         ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@map("cart_items")
+}
+
+// Order Model - Customer orders
+model Order {
+  id              String   @id @default(cuid())
+  userId          String?
+  orderNumber     String   @unique // Human-readable order number
+
+  // Customer details
+  email           String
+  firstName       String
+  lastName        String
+
+  // Shipping address - Stored as JSON string
+  shippingAddress String   // JSON: { street, city, state, zip, country }
+
+  // Pricing
+  subtotal        Float
+  tax             Float
+  shipping        Float
+  total           Float
+
+  // Payment
+  paymentStatus   String   @default("PENDING") // "PENDING", "PAID", "FAILED", "REFUNDED"
+  paymentMethod   String?  // "card", "paypal", etc.
+
+  // Order status
+  orderStatus     String   @default("PENDING") // "PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items           OrderItem[]
+
+  @@map("orders")
+}
+
+// Order Item Model - Snapshot of product at purchase time
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String
+  productId  String
+  variantId  String?
+
+  // Snapshot of product at time of order
+  productName    String
+  variantName    String?
+  price          Float
+  quantity       Int
+  isSubscription Boolean @default(false)
+
+  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product        @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@map("order_items")
+}

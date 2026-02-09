@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background Circle -->
+  <circle cx="100" cy="75" r="50" fill="none" stroke="#FFB6C1" stroke-width="4"/>
+
+  <!-- Baby (light blue) -->
+  <ellipse cx="90" cy="60" rx="12" ry="15" fill="#B5E7F0"/>
+  <circle cx="90" cy="45" r="10" fill="#B5E7F0"/>
+
+  <!-- Mother (light blue) -->
+  <ellipse cx="110" cy="70" rx="15" ry="20" fill="#B5E7F0"/>
+  <circle cx="110" cy="40" r="15" fill="#B5E7F0"/>
+
+  <!-- Hand (pink) -->
+  <path d="M 70 80 Q 80 90, 100 95 Q 120 90, 130 80" fill="#FFB6C1"/>
+  <path d="M 100 95 L 100 110 Q 100 115, 105 115 Q 110 115, 110 110 L 110 95" fill="#FFB6C1"/>
+
+  <!-- Text "Milky" -->
+  <text x="100" y="165" font-family="Arial, sans-serif" font-size="32" font-weight="bold" font-style="italic" fill="#FFB6C1" text-anchor="middle">Milky</text>
+
+  <!-- Text "express" -->
+  <text x="100" y="185" font-family="Arial, sans-serif" font-size="20" fill="#FFB6C1" text-anchor="middle">express</text>
+</svg>
