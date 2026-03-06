@@ -1,0 +1,16 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+    build:
+      commands:
+        - npx turbo run build --filter=frontend
+  artifacts:
+    baseDirectory: apps/frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
