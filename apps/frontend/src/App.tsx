@@ -1,190 +1,125 @@
+import {
+  Routes,
+  Route,
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { useEffect, useCallback } from "react";
+import {
+  FaInstagram,
+  FaTiktok,
+  FaWhatsapp,
+  FaPhone,
+  FaHeart,
+} from "react-icons/fa6";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+
+function ScrollToTop() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (hash) {
+      // Wait for the page to render, then scroll to the hash target
+      setTimeout(() => {
+        const el = document.getElementById(hash.replace("#", ""));
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]);
+  return null;
+}
+
 function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      e.preventDefault();
+      const href = e.currentTarget.getAttribute("href") || "";
+      const hashIndex = href.indexOf("#");
+      const targetId = hashIndex !== -1 ? href.substring(hashIndex + 1) : "";
+
+      if (location.pathname === "/") {
+        // Already on home page — just scroll
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } else {
+        // Navigate to home page with hash — ScrollToTop will handle scrolling
+        navigate("/#" + targetId);
+      }
+    },
+    [location.pathname, navigate],
+  );
+
   return (
     <div className="min-h-screen">
+      <ScrollToTop />
+
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <nav className="container-custom py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <img src="/logo.jpg" alt="Milky Express" className="h-16 w-16" />
+            <Link to="/" className="flex items-center space-x-2">
+              <img
+                src="/logo.webp"
+                alt="Milky Express"
+                className="h-20 w-20 object-contain"
+              />
               <div>
-                <h1 className="text-2xl font-display font-bold gradient-text">Milky Express</h1>
-                <p className="text-xs text-gray-500">Nourishing Mamas, Naturally</p>
+                <h1 className="text-2xl font-display font-bold gradient-text">
+                  Milky Express
+                </h1>
+                <p className="text-xs text-gray-500">
+                  Nourish your motherhood—one product at a time.
+                </p>
               </div>
-            </div>
+            </Link>
             <div className="hidden md:flex items-center space-x-6">
-              <a href="#products" className="text-gray-700 hover:text-primary transition-colors">Products</a>
-              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">About</a>
-              <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Contact</a>
-              <button className="btn-primary">Shop Now</button>
+              <a
+                href="/#products"
+                onClick={handleNavClick}
+                className="text-gray-700 hover:text-primary transition-colors"
+              >
+                Products
+              </a>
+              <a
+                href="/#testimonials"
+                onClick={handleNavClick}
+                className="text-gray-700 hover:text-primary transition-colors"
+              >
+                Testimonials
+              </a>
+              <Link
+                to="/about"
+                className="text-gray-700 hover:text-primary transition-colors"
+              >
+                About
+              </Link>
+              <a
+                href="/#contact"
+                onClick={handleNavClick}
+                className="text-gray-700 hover:text-primary transition-colors"
+              >
+                Contact
+              </a>
             </div>
           </div>
         </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="container-custom py-20 md:py-32">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6 animate-fadeIn">
-            <div className="inline-block">
-              <span className="badge text-sm">✨ New Arrivals</span>
-            </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold">
-              Delicious
-              <span className="block gradient-text">Lactation Support</span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Nourishing lactation bites & cookies crafted with love to support your breastfeeding journey.
-              Gluten-free, organic, and absolutely delicious!
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <button className="btn-primary text-lg px-8 py-4">
-                Browse Products →
-              </button>
-              <button className="btn-outline text-lg px-8 py-4">
-                Learn More
-              </button>
-            </div>
-            <div className="flex items-center space-x-6 pt-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-3xl">🌱</span>
-                <div>
-                  <p className="font-semibold text-gray-900">100% Natural</p>
-                  <p className="text-sm text-gray-500">Organic Ingredients</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-3xl">✓</span>
-                <div>
-                  <p className="font-semibold text-gray-900">Certified</p>
-                  <p className="text-sm text-gray-500">Gluten-Free & Non-GMO</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="relative">
-            <div className="relative animate-float">
-              <img
-                src="/logo.jpg"
-                alt="Milky Express Logo"
-                className="w-full max-w-md mx-auto drop-shadow-2xl"
-              />
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-white py-20">
-        <div className="container-custom">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-display font-bold gradient-text mb-4">
-              Why Choose Milky Express?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              We're dedicated to supporting breastfeeding mamas with delicious, nutritious lactation treats
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="card text-center group">
-              <div className="text-5xl mb-4">🍪</div>
-              <h3 className="text-2xl font-display font-semibold mb-3 text-gray-900">Lactation Support</h3>
-              <p className="text-gray-600">
-                Packed with galactagogues like oats, flax, and brewer's yeast to naturally support milk production
-              </p>
-            </div>
-
-            <div className="card text-center group">
-              <div className="text-5xl mb-4">🌿</div>
-              <h3 className="text-2xl font-display font-semibold mb-3 text-gray-900">Pure Ingredients</h3>
-              <p className="text-gray-600">
-                100% natural, organic ingredients. Gluten-free, Non-GMO, and made with love
-              </p>
-            </div>
-
-            <div className="card text-center group">
-              <div className="text-5xl mb-4">❤️</div>
-              <h3 className="text-2xl font-display font-semibold mb-3 text-gray-900">Delicious Taste</h3>
-              <p className="text-gray-600">
-                Who says healthy can't be tasty? Our treats are so good, you'll forget they're good for you!
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Product Preview Section */}
-      <section className="container-custom py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-display font-bold gradient-text mb-4">
-            Featured Products
-          </h2>
-          <p className="text-xl text-gray-600">
-            Handcrafted with care, delivered with love
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              name: 'Chocolate Bliss Bites',
-              price: '$24.00',
-              description: 'Rich chocolate lactation bites',
-              badge: '🔥 Bestseller',
-              image: '🍫'
-            },
-            {
-              name: 'Morning Oat Bites',
-              price: '$22.00',
-              description: 'Energy-packed oat goodness',
-              badge: '⭐ New',
-              image: '🌾'
-            },
-            {
-              name: 'Birthday Cake Cookies',
-              price: '$24.00',
-              description: 'Fun & delicious celebration',
-              badge: '🎉 Popular',
-              image: '🎂'
-            },
-          ].map((product, index) => (
-            <div key={index} className="card group cursor-pointer">
-              <div className="relative mb-4">
-                <div className="w-full aspect-square bg-gradient-soft rounded-xl flex items-center justify-center text-8xl">
-                  {product.image}
-                </div>
-                <span className="absolute top-2 right-2 badge">{product.badge}</span>
-              </div>
-              <h3 className="text-xl font-display font-semibold mb-2 text-gray-900">
-                {product.name}
-              </h3>
-              <p className="text-gray-600 mb-4">{product.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-primary">{product.price}</span>
-                <button className="btn-primary text-sm">Add to Cart</button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-primary py-20 text-white">
-        <div className="container-custom text-center">
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
-            Ready to Support Your Journey?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join thousands of mamas who trust Milky Express for delicious lactation support
-          </p>
-          <button className="bg-white text-primary hover:bg-gray-50 font-semibold px-10 py-4 rounded-full text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-            Shop All Products →
-          </button>
-        </div>
-      </section>
+      {/* Page Content */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-12">
@@ -192,53 +127,161 @@ function App() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <img src="/logo.jpg" alt="Milky Express" className="h-12 w-12" />
-                <span className="text-xl font-display font-bold text-white">Milky Express</span>
+                <img
+                  src="/logo.webp"
+                  alt="Milky Express"
+                  className="h-12 w-12"
+                />
+                <span className="text-xl font-display font-bold text-white">
+                  Milky Express
+                </span>
               </div>
               <p className="text-sm">
-                Nourishing mamas with delicious lactation support, one bite at a time.
+                Nourish your motherhood—one product at a time.
               </p>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Shop</h4>
+              <h4 className="text-white font-semibold mb-4">Products</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-primary transition-colors">All Products</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Lactation Bites</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Cookies</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Gift Sets</a></li>
+                <li>
+                  <a
+                    href="/#products"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Lactation Cookies
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/#products"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Lactation Tea
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/#products"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Lactation Granola
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/#products"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Lactation Pap
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">FAQ</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
+                <li>
+                  <Link
+                    to="/about"
+                    className="hover:text-primary transition-colors"
+                  >
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="/#testimonials"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Testimonials
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/#contact"
+                    onClick={handleNavClick}
+                    className="hover:text-primary transition-colors"
+                  >
+                    Contact
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Newsletter</h4>
-              <p className="text-sm mb-3">Get exclusive offers & lactation tips</p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="flex-1 px-4 py-2 rounded-l-lg text-gray-900 focus:outline-none"
-                />
-                <button className="bg-primary hover:bg-primary-600 px-4 py-2 rounded-r-lg transition-colors">
-                  →
-                </button>
-              </div>
+              <h4 className="text-white font-semibold mb-4">Connect</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="https://www.instagram.com/milky_express"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors flex items-center space-x-2"
+                  >
+                    <FaInstagram className="text-lg" />
+                    <span>Instagram</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.tiktok.com/@milkyexpress_"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors flex items-center space-x-2"
+                  >
+                    <FaTiktok className="text-lg" />
+                    <span>TikTok</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://wa.me/message/LQQ77OT5B2SPA1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors flex items-center space-x-2"
+                  >
+                    <FaWhatsapp className="text-lg" />
+                    <span>WhatsApp</span>
+                  </a>
+                </li>
+                <li className="pt-2">
+                  <a
+                    href="tel:+2349091186801"
+                    className="hover:text-primary transition-colors flex items-center space-x-2"
+                  >
+                    <FaPhone className="text-base" />
+                    <span>+234 909 118 6801</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="tel:+14168354919"
+                    className="hover:text-primary transition-colors flex items-center space-x-2"
+                  >
+                    <FaPhone className="text-base" />
+                    <span>+1 416 835 4919</span>
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>&copy; 2024 Milky Express. Made with ❤️ for breastfeeding mamas.</p>
+            <p className="flex items-center justify-center space-x-1">
+              <span>
+                &copy; {new Date().getFullYear()} Milky Express. Made with
+              </span>
+              <FaHeart className="text-primary inline" />
+              <span>for breastfeeding mamas.</span>
+            </p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
